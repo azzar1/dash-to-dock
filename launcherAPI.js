@@ -151,6 +151,7 @@ var LauncherEntryRemote = new Lang.Class({
         this._countVisible = false;
         this._progress = 0.0;
         this._progressVisible = false;
+        this._urgent = false;
         this.update(properties);
     },
 
@@ -206,6 +207,17 @@ var LauncherEntryRemote = new Lang.Class({
         }
     },
 
+    urgent: function () {
+        return this._urgent;
+    },
+
+    setUrgent: function (urgent) {
+        if (this._urgent != urgent) {
+            this._urgent = urgent;
+            this.emit('urgent-changed', this._urgent);
+        }
+    },
+
     setDBusName: function (dbusName) {
         if (this._dbusName != dbusName) {
             let oldName = this._dbusName;
@@ -221,6 +233,7 @@ var LauncherEntryRemote = new Lang.Class({
             this.setCountVisible(other.countVisible());
             this.setProgress(other.progress());
             this.setProgressVisible(other.progressVisible())
+            this.setUrgent(other.urgent());
         } else {
             for (let property in other) {
                 if (other.hasOwnProperty(property)) {
@@ -232,6 +245,8 @@ var LauncherEntryRemote = new Lang.Class({
                         this.setProgress(other[property].get_double());
                     } else if (property == 'progress-visible') {
                         this.setProgressVisible(other[property].get_boolean());
+                    } else if (property == 'urgent') {
+                        this.setUrgent(other[property].get_boolean());
                     } else {
                         // Not implemented yet
                     }
