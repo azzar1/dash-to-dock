@@ -153,6 +153,11 @@
       <summary>Running application indicators border width.</summary>
       <description>Customize the border width of the running application indicators.</description>
     </key>
+    <key type="s" name="custom-theme-urgent-dots-color">
+      <default>"#7ec0ee"</default>
+      <summary>Urgent application indicators color</summary>
+      <description>Customize the color of the urgent application indicators.</description>
+    </key>
     <key type="b" name="show-running">
       <default>true</default>
       <summary>Show running apps</summary>

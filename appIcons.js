@@ -137,12 +137,14 @@ var MyAppIcon = new Lang.Class({
         this._dots = null;
         this._progressOverlayArea = null;
         this._progress = 0;
+        this._urgent = false;
 
         let keys = ['apply-custom-theme',
                    'custom-theme-running-dots',
                    'custom-theme-customize-running-dots',
                    'custom-theme-running-dots-color',
                    'custom-theme-running-dots-border-color',
+                   'custom-theme-urgent-dots-color',
                    'custom-theme-running-dots-border-width',
                    'unity-backlit-items'];
 
@@ -878,7 +880,7 @@ var MyAppIcon = new Lang.Class({
     },
 
     _drawCircles: function(area, side) {
-        let borderColor, borderWidth, bodyColor;
+        let borderColor, borderWidth, bodyColor, urgentColor;
 
         if (!this._dtdSettings.get_boolean('apply-custom-theme')
             && this._dtdSettings.get_boolean('custom-theme-running-dots')
@@ -886,6 +888,7 @@ var MyAppIcon = new Lang.Class({
             borderColor = Clutter.color_from_string(this._dtdSettings.get_string('custom-theme-running-dots-border-color'))[1];
             borderWidth = this._dtdSettings.get_int('custom-theme-running-dots-border-width');
             bodyColor =  Clutter.color_from_string(this._dtdSettings.get_string('custom-theme-running-dots-color'))[1];
+            urgentColor =  Clutter.color_from_string(this._dtdSettings.get_string('custom-theme-urgent-dots-color'))[1];
         }
         else {
             // Re-use the style - background color, and border width and color -
@@ -894,6 +897,13 @@ var MyAppIcon = new Lang.Class({
             borderColor = themeNode.get_border_color(side);
             borderWidth = themeNode.get_border_width(side);
             bodyColor = themeNode.get_background_color();
+            urgentColor = new Gdk.RGBA();
+            urgentColor.parse('#7ec0ee');
+        }
+
+        if (this._urgent) {
+            bodyColor = urgentColor;
+            bodyColor = urgentColor;
         }
 
         let [width, height] = area.get_surface_size();
@@ -1167,6 +1177,17 @@ var MyAppIcon = new Lang.Class({
             this._numberOverlayBin.hide();
     },
 
+    setUrgent: function(urgent) {
+        this._urgent = urgent;
+        this._updateCounterClass();
+        /*if (urgent) {
+            //this._iconContainer.get_children()[1].set_style('-gtk‑icon‑effect: highlight;')
+            //this._enableBacklight();
+        } else {
+            //this._updateRunningStyle();
+        }*/
+    },
+
     _minimizeWindow: function(param) {
         // Param true make all app windows minimize
         let windows = this.getInterestingWindows();
@@ -1326,14 +1347,22 @@ var MyAppIcon = new Lang.Class({
             Lang.bind(this, (remote, value) => {
                 this.toggleProgressOverlay(value);
             })
+        ], [
+            remote,
+            'urgent-changed',
+            Lang.bind(this, (remote, value) => {
+                this.setUrgent(value);
+            })
         ]);
 
         this.setNotificationBadge(remote.count());
         this.toggleNotificationBadge(remote.countVisible());
         this.setProgress(remote.progress());
         this.toggleProgressOverlay(remote.progressVisible());
+        this.setUrgent(remote.urgent());
     },
 });
+
 /**
  * Extend AppIconMenu
  *

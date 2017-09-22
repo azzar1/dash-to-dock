@@ -552,6 +552,16 @@ const Settings = new Lang.Class({
                 this._settings.set_string('custom-theme-running-dots-border-color', hexString);
             }));
 
+            rgba.parse(this._settings.get_string('custom-theme-urgent-dots-color'));
+            this._builder.get_object('dot_urgent_color_colorbutton').set_rgba(rgba);
+
+            this._builder.get_object('dot_urgent_color_colorbutton').connect('notify::color', Lang.bind(this, function(button) {
+                let rgba = button.get_rgba();
+                let css = rgba.to_string();
+                let hexString = cssHexString(css);
+                this._settings.set_string('custom-theme-urgent-dots-color', hexString);
+            }));
+
             this._settings.bind('custom-theme-running-dots-border-width',
                                 this._builder.get_object('dot_border_width_spin_button'),
                                 'value',
